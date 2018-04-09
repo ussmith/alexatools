@@ -1,51 +1,119 @@
 package alexatools
 
+//Emphasis describes the SSML Emphasis directives
+type Emphasis string
+
+//BreakStrength describes the SSML BreakStrength directives
+type BreakStrength string
+
+//Pitch describes the SSML pitch directives
+type Pitch string
+
+//Rate describes the SSML rate directives
+type Rate string
+
+//Volume describes the SSML volume directives
+type Volume string
+
+//SayAs describes the SSML SayAs directives
+type SayAs string
+
+//SSMLClock describes teh SSML 12 or 24 hour clock formats
+type SSMLClock string
+
 //This block is the const values for SSML Processing
 const (
-	//No Break Strength
-	None string = "none"
-	//Extra Weak Break Strength
-	ExtraWeak string = "x-weak"
-	//Weak Break Strength
-	Weak string = "weak"
-	//Medium Break Strenght or Medium Pitch or Medium Rate or Medium Volume
-	Medium string = "medium"
-	//Strong Break Strength or Strong Emphasis Type
-	Strong string = "strong"
-	//Extra Strong Break Strength
-	ExtraStrong string = "x-strong"
 
-	//Moderate emphasis
-	Moderate string = "moderate"
-	//Reduced emphasis
-	Reduced string = "reduced"
+	//NoBreakStrength
+	NoBreakStrength BreakStrength = "none"
+	//ExtraWeakBreakStrength
+	ExtraWeakBreakStrength BreakStrength = "x-weak"
+	//WeakBreakStrength
+	WeakBreakStrength BreakStrength = "weak"
+	//MediumBreakStrenght
+	MediumBreakStrength BreakStrength = "medium"
+	//StrongBreakStrength
+	StrongBreakStrength BreakStrength = "strong"
+	//ExtraStrongBreakStrength
+	ExtraStrongBreakStrength BreakStrength = "x-strong"
 
-	//Extra Low Pitch
-	ExtraLow string = "x-low"
-	//Low Pitch
-	Low string = "low"
-	//High Pitch
-	High string = "high"
-	//Extra High Pitch
-	ExtraHigh = "x-high"
+	//ModerateEmphasis
+	ModerateEmphasis Emphasis = "moderate"
+	//ReducedEmphasis
+	ReducedEmphasis Emphasis = "reduced"
+	//StrongEmphasis
+	StrongEmphasis Emphasis = "strong"
 
-	//Extra Slow Rate
-	ExtraSlow string = ("x-slow")
-	//Slow Rate
-	Slow string = "slow"
-	//Fast Rate
-	Fast string = "fast"
-	//Extra Fast Rate
-	ExtraFast string = "x-fast"
+	//ExtraLowPitch
+	ExtraLowPitch Pitch = "x-low"
+	//LowPitch
+	LowPitch Pitch = "low"
+	//MediumPitch
+	MediumPitch Pitch = "medium"
+	//HighPitch
+	HighPitch Pitch = "high"
+	//ExtraHighPitch
+	ExtraHighPitch Pitch = "x-high"
 
-	//Silent Volume
-	Silent string = "silent"
-	//Extra Soft Volume
-	ExtraSoft string = "x-soft"
-	//Soft Volume
-	Soft string = "soft"
-	//Loud Volume
-	Loud string = "loud"
-	//Extra Loud Volume
-	ExtraLoud string = "x-loud"
+	//ExtraSlowRate
+	ExtraSlowRate Rate = ("x-slow")
+	//SlowRate
+	SlowRate Rate = "slow"
+	//MediumRate
+	MediumRate Rate = "medium"
+	//FastRateRate
+	Fast Rate = "fast"
+	//ExtraFastRate
+	ExtraFastRate Rate = "x-fast"
+
+	//Silent
+	Silent Volume = "silent"
+	//ExtraSoftVolume
+	ExtraSoftVolume Volume = "x-soft"
+	//SoftVolume
+	Soft Volume = "soft"
+	//MediumVolume
+	MediumVolume Volume = "medium"
+	//LoudVolume
+	LoudVolume Volume = "loud"
+	//ExtraLoudVolume
+	ExtraLoudVolume string = "x-loud"
+)
+
+//These consts describe the SSML say as features
+const (
+	//Characters
+	Characters SayAs = "characters"
+	//Spell Out
+	SpellOut SayAs = "spell-out"
+	//Carinal
+	Cardinal SayAs = "cardinal"
+	//Number
+	Number SayAs = "number"
+	//Oridinal
+	Ordinal SayAs = "ordinal"
+	//Digits
+	Digits SayAs = "digits"
+	//Fraction
+	Fraction SayAs = "fraction"
+	//Unit
+	Unit SayAs = "unit"
+	//Time
+	Time SayAs = "time"
+	//Telephone
+	Telephone SayAs = "telephone"
+	//Address
+	Address SayAs = "address"
+	//Interjection
+	Interjection SayAs = "interjection"
+	//Expletive
+	Expletive SayAs = "expletive"
+)
+
+//These consts describe the SSML time format
+const (
+	//SSML 12 Hour clock format
+	TwelveHourClock SSMLClock = "hms12"
+	//SSML 24 Hour clock format
+	TwentyFourHourClock SSMLClock = "hms24"
 )
