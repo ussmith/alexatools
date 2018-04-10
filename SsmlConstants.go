@@ -21,6 +21,8 @@ type SayAs string
 //SSMLClock describes teh SSML 12 or 24 hour clock formats
 type SSMLClock string
 
+type Whisper string
+
 //This block is the const values for SSML Processing
 const (
 
@@ -77,7 +79,7 @@ const (
 	//LoudVolume
 	LoudVolume Volume = "loud"
 	//ExtraLoudVolume
-	ExtraLoudVolume string = "x-loud"
+	ExtraLoudVolume Volume = "x-loud"
 )
 
 //These consts describe the SSML say as features
@@ -116,4 +118,9 @@ const (
 	TwelveHourClock SSMLClock = "hms12"
 	//SSML 24 Hour clock format
 	TwentyFourHourClock SSMLClock = "hms24"
+)
+
+const (
+	//WhisperString is an alexa specific ssml directive
+	WhisperString Whisper = "whispers"
 )

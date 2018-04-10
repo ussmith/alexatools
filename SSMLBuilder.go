@@ -17,8 +17,17 @@ type SsmlBuilder interface {
 	Build() string
 }
 
+//AlexaBuilder adds alexa specific capbability whisper
+type AlexaBuilder interface {
+	Whisper(Whisper) AlexaBuilder
+}
+
 type ssmlBuilder struct {
 	buffer bytes.Buffer
+}
+
+func (builder *ssmlBuilder) Whisper(whisper Whisper) AlexaBuilder {
+	return builder
 }
 
 func (builder *ssmlBuilder) Emphasis(emphasis Emphasis) SsmlBuilder {
