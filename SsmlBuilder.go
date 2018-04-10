@@ -15,6 +15,8 @@ type SsmlBuilder interface {
 	Volume(Volume) SsmlBuilder
 	SayAs(SayAs, string) SsmlBuilder
 	SSMLClock(SSMLClock) SsmlBuilder
+	Sentence(string) SsmlBuilder
+	Paragraph(string) SsmlBuilder
 	Build() string
 }
 
@@ -42,6 +44,8 @@ var breakStrengthTemplate *template.Template
 var breakTimeTemplate *template.Template
 var emphasisTemplate *template.Template
 var sayAsTemplate *template.Template
+var sentenceTemplate *template.Template
+var paragraphTemplate *template.Template
 
 func init() {
 	var err error
@@ -74,11 +78,37 @@ func init() {
 	if err != nil {
 		panic("Failed to parse emphasis template")
 	}
+
+	sentenceTemplate = template.New("sentence")
+	sentenceTemplate, err = sentenceTemplate.Parse(sentenceTempl)
+	if err != nil {
+		panic("Failed to parse sentence template")
+	}
+
+	paragraphTemplate = template.New("paragraph")
+	paragraphTemplate, err = paragraphTemplate.Parse(paragraphTempl)
+	if err != nil {
+		panic("Failed to parse paragraph template")
+	}
 }
 
 func (builder *ssmlBuilder) Whisper(whisper string) AlexaBuilder {
 	var tpl bytes.Buffer
 	whisperTemplate.Execute(&tpl, whisper)
+	builder.buffer.WriteString(tpl.String())
+	return builder
+}
+
+func (builder *ssmlBuilder) Sentence(val string) SsmlBuilder {
+	var tpl bytes.Buffer
+	sentenceTemplate.Execute(&tpl, val)
+	builder.buffer.WriteString(tpl.String())
+	return builder
+}
+
+func (builder *ssmlBuilder) Paragraph(val string) SsmlBuilder {
+	var tpl bytes.Buffer
+	paragraphTemplate.Execute(&tpl, val)
 	builder.buffer.WriteString(tpl.String())
 	return builder
 }

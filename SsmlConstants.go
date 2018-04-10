@@ -124,6 +124,11 @@ const (
 )
 
 const (
+	sentenceTempl  string = "<s>{{.}}</s>"
+	paragraphTempl string = "<p>{{.}}</p>"
+)
+
+const (
 	//WhisperString Whisper = "whispers"
 
 	//Whisper is a template for processing alexa specific SSML directives
