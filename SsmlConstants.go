@@ -40,11 +40,12 @@ const (
 	//ExtraStrongBreakStrength
 	ExtraStrongBreakStrength BreakStrength = "x-strong"
 
+	emphasisTempl string = "<emphasis level=\"{{.Level}}\">{{.Value}}</emphasis>"
 	//ModerateEmphasis
 	ModerateEmphasis Emphasis = "moderate"
 	//ReducedEmphasis
 	ReducedEmphasis Emphasis = "reduced"
-	//StrongEmphasis
+	//StrongEmphasis"
 	StrongEmphasis Emphasis = "strong"
 
 	//ExtraLowPitch
