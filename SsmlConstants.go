@@ -86,6 +86,7 @@ const (
 
 //These consts describe the SSML say as features
 const (
+	sayAsTempl string = "<say-as interpret-as=\"{{.SayAsType}}\">{{.SayAsValue}}</say-as>"
 	//Characters
 	Characters SayAs = "characters"
 	//Spell Out

@@ -13,7 +13,7 @@ type SsmlBuilder interface {
 	Pitch(Pitch) SsmlBuilder
 	Rate(Rate) SsmlBuilder
 	Volume(Volume) SsmlBuilder
-	SayAs(SayAs) SsmlBuilder
+	SayAs(SayAs, string) SsmlBuilder
 	SSMLClock(SSMLClock) SsmlBuilder
 	Build() string
 }
@@ -32,10 +32,16 @@ type emphasisLevel struct {
 	Value string
 }
 
+type sayAs struct {
+	SayAsType  SayAs
+	SayAsValue string
+}
+
 var whisperTemplate *template.Template
 var breakStrengthTemplate *template.Template
 var breakTimeTemplate *template.Template
 var emphasisTemplate *template.Template
+var sayAsTemplate *template.Template
 
 func init() {
 	var err error
@@ -55,6 +61,12 @@ func init() {
 	breakTimeTemplate, err = breakTimeTemplate.Parse(breakTimeTempl)
 	if err != nil {
 		panic("Failed to parse break time template")
+	}
+
+	sayAsTemplate = template.New("sayAs")
+	sayAsTemplate, err = sayAsTemplate.Parse(sayAsTempl)
+	if err != nil {
+		panic("Failed to parse sayAs template")
 	}
 
 	emphasisTemplate = template.New("emphasis")
@@ -105,7 +117,11 @@ func (builder *ssmlBuilder) Volume(v Volume) SsmlBuilder {
 	return builder
 }
 
-func (builder *ssmlBuilder) SayAs(sa SayAs) SsmlBuilder {
+func (builder *ssmlBuilder) SayAs(sa SayAs, value string) SsmlBuilder {
+	var tpl bytes.Buffer
+	sas := sayAs{SayAsType: sa, SayAsValue: value}
+	sayAsTemplate.Execute(&tpl, sas)
+	builder.buffer.WriteString(tpl.String())
 	return builder
 }
 
