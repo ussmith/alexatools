@@ -2,6 +2,7 @@ package alexatools
 
 import (
 	"bytes"
+	"text/template"
 )
 
 //SsmlBuilder is a convenience tools for building complex
@@ -19,14 +20,27 @@ type SsmlBuilder interface {
 
 //AlexaBuilder adds alexa specific capbability whisper
 type AlexaBuilder interface {
-	Whisper(Whisper) AlexaBuilder
+	Whisper(string) AlexaBuilder
 }
 
 type ssmlBuilder struct {
 	buffer bytes.Buffer
 }
 
-func (builder *ssmlBuilder) Whisper(whisper Whisper) AlexaBuilder {
+var whisperTemplate *template.Template
+
+func init() {
+	var err error
+	whisperTemplate = template.New("whisper")
+	whisperTemplate, err = whisperTemplate.Parse(whisperTempl)
+	if err != nil {
+		panic("Failed to parse whisper template")
+	}
+}
+func (builder *ssmlBuilder) Whisper(whisper string) AlexaBuilder {
+	var tpl bytes.Buffer
+	whisperTemplate.Execute(&tpl, whisper)
+	builder.buffer.WriteString(tpl.String())
 	return builder
 }
 
