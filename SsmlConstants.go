@@ -25,6 +25,7 @@ type SSMLClock string
 
 //This block is the const values for SSML Processing
 const (
+	breakTimeTempl     string = "<break time=\"{{.1}}ms\"/>"
 	breakStrengthTempl string = "<break strength=\"{{.}}\"/>"
 	//NoBreakStrength
 	NoBreakStrength BreakStrength = "none"
