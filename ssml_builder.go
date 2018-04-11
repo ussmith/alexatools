@@ -108,6 +108,11 @@ func init() {
 	}
 }
 
+//New creates a new SsmlBuilder
+func New() SsmlBuilder {
+	return &ssmlBuilder{}
+}
+
 func (builder *ssmlBuilder) Whisper(whisper string) AlexaBuilder {
 	var tpl bytes.Buffer
 	whisperTemplate.Execute(&tpl, whisper)
@@ -118,14 +123,16 @@ func (builder *ssmlBuilder) Whisper(whisper string) AlexaBuilder {
 func (builder *ssmlBuilder) Sentence(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	sentenceTemplate.Execute(&tpl, val)
-	builder.buffer.WriteString(tpl.String() + " ")
+	builder.addElement(tpl.String())
+	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
 func (builder *ssmlBuilder) Paragraph(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	paragraphTemplate.Execute(&tpl, val)
-	builder.buffer.WriteString(tpl.String() + " ")
+	builder.addElement(tpl.String())
+	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -133,7 +140,8 @@ func (builder *ssmlBuilder) Emphasis(emphasis Emphasis, value string) SsmlBuilde
 	var tpl bytes.Buffer
 	el := emphasisLevel{Level: emphasis, Value: value}
 	emphasisTemplate.Execute(&tpl, el)
-	builder.buffer.WriteString(tpl.String() + " ")
+	builder.addElement(tpl.String())
+	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -155,7 +163,8 @@ func (builder *ssmlBuilder) Date(format SsmlClock, value string) SsmlBuilder {
 	var tpl bytes.Buffer
 	dv := ssmlDate{Format: format, Value: value}
 	dateTemplate.Execute(&tpl, dv)
-	builder.buffer.WriteString(tpl.String() + " ")
+	builder.addElement(tpl.String())
+	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -178,12 +187,12 @@ func (builder *ssmlBuilder) SayAs(sa SayAs, value string) SsmlBuilder {
 	var tpl bytes.Buffer
 	sas := sayAs{SayAsType: sa, SayAsValue: value}
 	sayAsTemplate.Execute(&tpl, sas)
-	builder.buffer.WriteString(tpl.String() + " ")
+	builder.addElement(tpl.String())
 	return builder
 }
 
 func (builder *ssmlBuilder) Say(s string) SsmlBuilder {
-	builder.buffer.WriteString(s)
+	builder.addElement(s)
 	return builder
 }
 
@@ -193,4 +202,61 @@ func (builder *ssmlBuilder) Build() string {
 	tpl.WriteString(builder.buffer.String())
 	tpl.WriteString("</speak>")
 	return tpl.String()
+}
+
+func (builder *ssmlBuilder) addElement(value string) {
+	if builder.VolumeVal == "" && builder.RateVal == "" && builder.PitchVal == "" {
+		builder.buffer.WriteString(value)
+		return
+	}
+
+	var count int
+
+	if builder.VolumeVal != "" {
+		count++
+	}
+	if builder.PitchVal != "" {
+		count++
+	}
+	if builder.RateVal != "" {
+		count++
+	}
+
+	var tpl bytes.Buffer
+	tpl.WriteString("<prosody ")
+
+	if builder.PitchVal != "" {
+		tpl.WriteString("pitch=\"")
+		tpl.WriteString(string(builder.PitchVal))
+		count--
+		if count > 1 {
+			tpl.WriteString(" ")
+		}
+	}
+
+	if builder.RateVal != "" {
+		tpl.WriteString("rate=\"")
+		tpl.WriteString(string(builder.RateVal))
+		count--
+		if count > 1 {
+			tpl.WriteString(" ")
+		}
+	}
+
+	if builder.VolumeVal != "" {
+		tpl.WriteString("volume=\"")
+		tpl.WriteString(string(builder.VolumeVal))
+	}
+
+	tpl.WriteString(">")
+	tpl.WriteString(value)
+	tpl.WriteString("</prosody>")
+
+	//Reset the prosody values
+	builder.VolumeVal = ""
+	builder.RateVal = ""
+	builder.PitchVal = ""
+
+	//Add the prosody section
+	builder.buffer.WriteString(tpl.String())
 }
