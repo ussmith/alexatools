@@ -20,12 +20,14 @@ func TestEmphasis(t *testing.T) {
 
 func TestBreakStrength(t *testing.T) {
 	builder := New()
-	builder = builder.BreakStrength(StrongBreakStrength)
+	builder = builder.Pause(StrongBreakStrength)
 	fmt.Println(builder.Build())
 }
 
 func TestProsody(t *testing.T) {
 	builder := New()
-	builder.Pitch(HighPitch).Say("High Pitchin' here boss")
+	//builder.Pitch(HighPitch).Say("High Pitchin' here boss")
+	builder.Pitch(HighPitch).Volume(LoudVolume).Say("High Pitchin' here boss")
+	builder.SayAs(Ordinal, "12345")
 	fmt.Println(builder.Build())
 }

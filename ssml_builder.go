@@ -2,14 +2,17 @@ package alexatools
 
 import (
 	"bytes"
+	"log"
 	"text/template"
+	"time"
 )
 
 //SsmlBuilder is a convenience tools for building complex
 //SSML based strings
 type SsmlBuilder interface {
 	Emphasis(Emphasis, string) SsmlBuilder
-	BreakStrength(BreakStrength) SsmlBuilder
+	Pause(BreakStrength) SsmlBuilder
+	DurationPause(time.Duration) SsmlBuilder
 	Pitch(Pitch) SsmlBuilder
 	Rate(Rate) SsmlBuilder
 	Volume(Volume) SsmlBuilder
@@ -145,9 +148,17 @@ func (builder *ssmlBuilder) Emphasis(emphasis Emphasis, value string) SsmlBuilde
 	return builder
 }
 
-func (builder *ssmlBuilder) BreakStrength(bs BreakStrength) SsmlBuilder {
+func (builder *ssmlBuilder) Pause(bs BreakStrength) SsmlBuilder {
 	var tpl bytes.Buffer
 	breakStrengthTemplate.Execute(&tpl, string(bs))
+	builder.buffer.WriteString(tpl.String() + " ")
+	return builder
+}
+
+func (builder *ssmlBuilder) DurationPause(d time.Duration) SsmlBuilder {
+	var tpl bytes.Buffer
+	millis := d.Nanoseconds() * 1000
+	breakStrengthTemplate.Execute(&tpl, millis)
 	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
@@ -222,14 +233,17 @@ func (builder *ssmlBuilder) addElement(value string) {
 		count++
 	}
 
+	log.Printf("Count = %d\n", count)
+
 	var tpl bytes.Buffer
 	tpl.WriteString("<prosody ")
 
 	if builder.PitchVal != "" {
 		tpl.WriteString("pitch=\"")
 		tpl.WriteString(string(builder.PitchVal))
+		tpl.WriteString("\"")
 		count--
-		if count > 1 {
+		if count >= 1 {
 			tpl.WriteString(" ")
 		}
 	}
@@ -237,8 +251,9 @@ func (builder *ssmlBuilder) addElement(value string) {
 	if builder.RateVal != "" {
 		tpl.WriteString("rate=\"")
 		tpl.WriteString(string(builder.RateVal))
+		tpl.WriteString("\"")
 		count--
-		if count > 1 {
+		if count >= 1 {
 			tpl.WriteString(" ")
 		}
 	}
@@ -246,6 +261,7 @@ func (builder *ssmlBuilder) addElement(value string) {
 	if builder.VolumeVal != "" {
 		tpl.WriteString("volume=\"")
 		tpl.WriteString(string(builder.VolumeVal))
+		tpl.WriteString("\"")
 	}
 
 	tpl.WriteString(">")
