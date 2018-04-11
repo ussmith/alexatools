@@ -17,6 +17,7 @@ type SsmlBuilder interface {
 	Sentence(string) SsmlBuilder
 	Paragraph(string) SsmlBuilder
 	Date(SsmlClock, string) SsmlBuilder
+	Say(string) SsmlBuilder
 	Build() string
 }
 
@@ -110,21 +111,21 @@ func init() {
 func (builder *ssmlBuilder) Whisper(whisper string) AlexaBuilder {
 	var tpl bytes.Buffer
 	whisperTemplate.Execute(&tpl, whisper)
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
 func (builder *ssmlBuilder) Sentence(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	sentenceTemplate.Execute(&tpl, val)
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
 func (builder *ssmlBuilder) Paragraph(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	paragraphTemplate.Execute(&tpl, val)
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -132,21 +133,21 @@ func (builder *ssmlBuilder) Emphasis(emphasis Emphasis, value string) SsmlBuilde
 	var tpl bytes.Buffer
 	el := emphasisLevel{Level: emphasis, Value: value}
 	emphasisTemplate.Execute(&tpl, el)
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
 func (builder *ssmlBuilder) BreakStrength(bs BreakStrength) SsmlBuilder {
 	var tpl bytes.Buffer
 	breakStrengthTemplate.Execute(&tpl, string(bs))
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
 func (builder *ssmlBuilder) Break(bt int) SsmlBuilder {
 	var tpl bytes.Buffer
 	breakTimeTemplate.Execute(&tpl, bt)
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -154,7 +155,7 @@ func (builder *ssmlBuilder) Date(format SsmlClock, value string) SsmlBuilder {
 	var tpl bytes.Buffer
 	dv := ssmlDate{Format: format, Value: value}
 	dateTemplate.Execute(&tpl, dv)
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -177,7 +178,7 @@ func (builder *ssmlBuilder) SayAs(sa SayAs, value string) SsmlBuilder {
 	var tpl bytes.Buffer
 	sas := sayAs{SayAsType: sa, SayAsValue: value}
 	sayAsTemplate.Execute(&tpl, sas)
-	builder.buffer.WriteString(tpl.String())
+	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -187,5 +188,9 @@ func (builder *ssmlBuilder) Say(s string) SsmlBuilder {
 }
 
 func (builder *ssmlBuilder) Build() string {
-	return builder.buffer.String()
+	var tpl bytes.Buffer
+	tpl.WriteString("<speak>")
+	tpl.WriteString(builder.buffer.String())
+	tpl.WriteString("</speak>")
+	return tpl.String()
 }
