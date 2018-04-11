@@ -26,7 +26,10 @@ type AlexaBuilder interface {
 }
 
 type ssmlBuilder struct {
-	buffer bytes.Buffer
+	buffer    bytes.Buffer
+	PitchVal  Pitch
+	RateVal   Rate
+	VolumeVal Volume
 }
 
 type emphasisLevel struct {
@@ -156,14 +159,17 @@ func (builder *ssmlBuilder) Date(format SsmlClock, value string) SsmlBuilder {
 }
 
 func (builder *ssmlBuilder) Pitch(p Pitch) SsmlBuilder {
+	builder.PitchVal = p
 	return builder
 }
 
 func (builder *ssmlBuilder) Rate(r Rate) SsmlBuilder {
+	builder.RateVal = r
 	return builder
 }
 
 func (builder *ssmlBuilder) Volume(v Volume) SsmlBuilder {
+	builder.VolumeVal = v
 	return builder
 }
 
