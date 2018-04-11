@@ -181,6 +181,11 @@ func (builder *ssmlBuilder) SayAs(sa SayAs, value string) SsmlBuilder {
 	return builder
 }
 
+func (builder *ssmlBuilder) Say(s string) SsmlBuilder {
+	builder.buffer.WriteString(s)
+	return builder
+}
+
 func (builder *ssmlBuilder) Build() string {
 	return builder.buffer.String()
 }
