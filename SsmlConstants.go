@@ -18,8 +18,8 @@ type Volume string
 //SayAs describes the SSML SayAs directives
 type SayAs string
 
-//SSMLClock describes teh SSML 12 or 24 hour clock formats
-type SSMLClock string
+//SsmlClock describes teh SSML 12 or 24 hour clock formats
+type SsmlClock string
 
 //type Whisper string
 
@@ -117,10 +117,11 @@ const (
 
 //These consts describe the SSML time format
 const (
+	dateTempl string = "<say-as interpret-as=\"date\" format=\"{{.Format}}\">{{.Value}}</say-as>"
 	//SSML 12 Hour clock format
-	TwelveHourClock SSMLClock = "hms12"
+	TwelveHourClock SsmlClock = "hms12"
 	//SSML 24 Hour clock format
-	TwentyFourHourClock SSMLClock = "hms24"
+	TwentyFourHourClock SsmlClock = "hms24"
 )
 
 const (

@@ -14,9 +14,9 @@ type SsmlBuilder interface {
 	Rate(Rate) SsmlBuilder
 	Volume(Volume) SsmlBuilder
 	SayAs(SayAs, string) SsmlBuilder
-	SSMLClock(SSMLClock) SsmlBuilder
 	Sentence(string) SsmlBuilder
 	Paragraph(string) SsmlBuilder
+	Date(SsmlClock, string) SsmlBuilder
 	Build() string
 }
 
@@ -39,6 +39,11 @@ type sayAs struct {
 	SayAsValue string
 }
 
+type ssmlDate struct {
+	Format SsmlClock
+	Value  string
+}
+
 var whisperTemplate *template.Template
 var breakStrengthTemplate *template.Template
 var breakTimeTemplate *template.Template
@@ -46,6 +51,7 @@ var emphasisTemplate *template.Template
 var sayAsTemplate *template.Template
 var sentenceTemplate *template.Template
 var paragraphTemplate *template.Template
+var dateTemplate *template.Template
 
 func init() {
 	var err error
@@ -89,6 +95,12 @@ func init() {
 	paragraphTemplate, err = paragraphTemplate.Parse(paragraphTempl)
 	if err != nil {
 		panic("Failed to parse paragraph template")
+	}
+
+	dateTemplate = template.New("date")
+	dateTemplate, err = dateTemplate.Parse(dateTempl)
+	if err != nil {
+		panic("Failed to parse date template")
 	}
 }
 
@@ -135,6 +147,14 @@ func (builder *ssmlBuilder) Break(bt int) SsmlBuilder {
 	return builder
 }
 
+func (builder *ssmlBuilder) Date(format SsmlClock, value string) SsmlBuilder {
+	var tpl bytes.Buffer
+	dv := ssmlDate{Format: format, Value: value}
+	dateTemplate.Execute(&tpl, dv)
+	builder.buffer.WriteString(tpl.String())
+	return builder
+}
+
 func (builder *ssmlBuilder) Pitch(p Pitch) SsmlBuilder {
 	return builder
 }
@@ -152,10 +172,6 @@ func (builder *ssmlBuilder) SayAs(sa SayAs, value string) SsmlBuilder {
 	sas := sayAs{SayAsType: sa, SayAsValue: value}
 	sayAsTemplate.Execute(&tpl, sas)
 	builder.buffer.WriteString(tpl.String())
-	return builder
-}
-
-func (builder *ssmlBuilder) SSMLClock(clock SSMLClock) SsmlBuilder {
 	return builder
 }
 
