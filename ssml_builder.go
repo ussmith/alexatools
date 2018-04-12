@@ -193,11 +193,16 @@ func (builder *ssmlBuilder) Say(s string) SsmlBuilder {
 func (builder *ssmlBuilder) Build() string {
 	var tpl bytes.Buffer
 	tpl.WriteString("<speak>")
-	tpl.WriteString(builder.buffer.String())
+	tpl.WriteString(builder.BuildChunk())
 	tpl.WriteString("</speak>")
 	return tpl.String()
 }
 
+func (builder *ssmlBuilder) BuildChunk() string {
+	var tpl bytes.Buffer
+	tpl.WriteString(builder.buffer.String())
+	return tpl.String()
+}
 func (builder *ssmlBuilder) addElement(value string) {
 	if builder.VolumeVal == "" && builder.RateVal == "" && builder.PitchVal == "" {
 		builder.buffer.WriteString(value)
