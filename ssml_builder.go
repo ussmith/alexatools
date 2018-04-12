@@ -57,6 +57,7 @@ var paragraphTemplate *template.Template
 var dateTemplate *template.Template
 
 func init() {
+	var err error
 
 	breakStrengthTemplate = template.New("breakStrength")
 	breakStrengthTemplate, err = breakStrengthTemplate.Parse(breakStrengthTempl)
