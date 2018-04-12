@@ -24,11 +24,6 @@ type SsmlBuilder interface {
 	Build() string
 }
 
-//AlexaBuilder adds alexa specific capbability whisper
-type AlexaBuilder interface {
-	Whisper(string) AlexaBuilder
-}
-
 type ssmlBuilder struct {
 	buffer    bytes.Buffer
 	PitchVal  Pitch
@@ -53,16 +48,6 @@ type ssmlDate struct {
 
 var replacer = strings.NewReplacer("&", " and ", "<", "", ">", "", "'", "", "\"", "")
 
-//protected String escape(String word) {
-//   word = word.replace("&", "and");
-//  word = word.replace("<", "");
-// word = word.replace(">", "");
-//    word = word.replace("'", "");
-//   word = word.replace("\"", "");
-//  return word;
-//  }
-
-var whisperTemplate *template.Template
 var breakStrengthTemplate *template.Template
 var breakTimeTemplate *template.Template
 var emphasisTemplate *template.Template
@@ -72,12 +57,6 @@ var paragraphTemplate *template.Template
 var dateTemplate *template.Template
 
 func init() {
-	var err error
-	whisperTemplate = template.New("whisper")
-	whisperTemplate, err = whisperTemplate.Parse(whisperTempl)
-	if err != nil {
-		panic("Failed to parse whisper template")
-	}
 
 	breakStrengthTemplate = template.New("breakStrength")
 	breakStrengthTemplate, err = breakStrengthTemplate.Parse(breakStrengthTempl)
@@ -125,13 +104,6 @@ func init() {
 //New creates a new SsmlBuilder
 func New() SsmlBuilder {
 	return &ssmlBuilder{}
-}
-
-func (builder *ssmlBuilder) Whisper(whisper string) AlexaBuilder {
-	var tpl bytes.Buffer
-	whisperTemplate.Execute(&tpl, whisper)
-	builder.buffer.WriteString(tpl.String() + " ")
-	return builder
 }
 
 func (builder *ssmlBuilder) Phomeme(raw, phomeme string, cs CharacterSet) SsmlBuilder {
