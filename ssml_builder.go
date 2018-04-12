@@ -3,8 +3,8 @@ package alexatools
 import (
 	"bytes"
 	"log"
+	"strings"
 	"text/template"
-	"time"
 )
 
 //SsmlBuilder is a convenience tools for building complex
@@ -12,7 +12,7 @@ import (
 type SsmlBuilder interface {
 	Emphasis(Emphasis, string) SsmlBuilder
 	Pause(BreakStrength) SsmlBuilder
-	DurationPause(time.Duration) SsmlBuilder
+	DurationPause(int) SsmlBuilder
 	Pitch(Pitch) SsmlBuilder
 	Rate(Rate) SsmlBuilder
 	Volume(Volume) SsmlBuilder
@@ -50,6 +50,17 @@ type ssmlDate struct {
 	Format SsmlClock
 	Value  string
 }
+
+var replacer = strings.NewReplacer("&", " and ", "<", "", ">", "", "'", "", "\"", "")
+
+//protected String escape(String word) {
+//   word = word.replace("&", "and");
+//  word = word.replace("<", "");
+// word = word.replace(">", "");
+//    word = word.replace("'", "");
+//   word = word.replace("\"", "");
+//  return word;
+//  }
 
 var whisperTemplate *template.Template
 var breakStrengthTemplate *template.Template
@@ -123,11 +134,14 @@ func (builder *ssmlBuilder) Whisper(whisper string) AlexaBuilder {
 	return builder
 }
 
+func (builder *ssmlBuilder) Phomeme(raw, phomeme string, cs CharacterSet) SsmlBuilder {
+	return builder
+}
+
 func (builder *ssmlBuilder) Sentence(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	sentenceTemplate.Execute(&tpl, val)
 	builder.addElement(tpl.String())
-	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -135,7 +149,6 @@ func (builder *ssmlBuilder) Paragraph(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	paragraphTemplate.Execute(&tpl, val)
 	builder.addElement(tpl.String())
-	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -144,7 +157,6 @@ func (builder *ssmlBuilder) Emphasis(emphasis Emphasis, value string) SsmlBuilde
 	el := emphasisLevel{Level: emphasis, Value: value}
 	emphasisTemplate.Execute(&tpl, el)
 	builder.addElement(tpl.String())
-	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -155,10 +167,9 @@ func (builder *ssmlBuilder) Pause(bs BreakStrength) SsmlBuilder {
 	return builder
 }
 
-func (builder *ssmlBuilder) DurationPause(d time.Duration) SsmlBuilder {
+func (builder *ssmlBuilder) DurationPause(millis int) SsmlBuilder {
 	var tpl bytes.Buffer
-	millis := d.Nanoseconds() * 1000
-	breakStrengthTemplate.Execute(&tpl, millis)
+	breakTimeTemplate.Execute(&tpl, millis)
 	builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
@@ -175,7 +186,6 @@ func (builder *ssmlBuilder) Date(format SsmlClock, value string) SsmlBuilder {
 	dv := ssmlDate{Format: format, Value: value}
 	dateTemplate.Execute(&tpl, dv)
 	builder.addElement(tpl.String())
-	//builder.buffer.WriteString(tpl.String() + " ")
 	return builder
 }
 
@@ -275,4 +285,9 @@ func (builder *ssmlBuilder) addElement(value string) {
 
 	//Add the prosody section
 	builder.buffer.WriteString(tpl.String())
+}
+
+func escape(in string) (out string) {
+	out = replacer.Replace(in)
+	return
 }

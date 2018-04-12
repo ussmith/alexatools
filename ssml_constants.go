@@ -21,11 +21,14 @@ type SayAs string
 //SsmlClock describes teh SSML 12 or 24 hour clock formats
 type SsmlClock string
 
+//CharacterSet describes the phomeme character set
+type CharacterSet string
+
 //type Whisper string
 
 //This block is the const values for SSML Processing
 const (
-	breakTimeTempl     string = "<break time=\"{{.1}}ms\"/>"
+	breakTimeTempl     string = "<break time=\"{{.}}ms\"/>"
 	breakStrengthTempl string = "<break strength=\"{{.}}\"/>"
 	//NoBreakStrength
 	NoBreakStrength BreakStrength = "none"
@@ -135,4 +138,11 @@ const (
 	//Whisper is a template for processing alexa specific SSML directives
 	//Whisper template.Template = template.Must(template.New("whisper").Parse("<amazon:effect name=\"whispered\">{{.}}</amazon:effect>"))
 	whisperTempl string = "<amazon:effect name=\"whispered\">{{.}}</amazon:effect>"
+)
+
+const (
+	//Ipa descriped the IPA phonetic alphabet
+	Ipa string = "ipa"
+	//XSampa descriped the IPA phonetic alphabet
+	XSampa string = "x-sampa"
 )

@@ -24,6 +24,14 @@ func TestBreakStrength(t *testing.T) {
 	fmt.Println(builder.Build())
 }
 
+func TestBreakDuration(t *testing.T) {
+	builder := New()
+	builder.Say("Scooby")
+	builder = builder.DurationPause(1000000)
+	builder.Say("Dooby Doo")
+	fmt.Println(builder.Build())
+}
+
 func TestProsody(t *testing.T) {
 	builder := New()
 	//builder.Pitch(HighPitch).Say("High Pitchin' here boss")
