@@ -39,3 +39,10 @@ func TestProsody(t *testing.T) {
 	builder.SayAs(Ordinal, "12345")
 	fmt.Println(builder.Build())
 }
+
+func TestEscape(t *testing.T) {
+	builder := New()
+
+	builder.Say("Yes & No")
+	fmt.Println(builder.Build())
+}

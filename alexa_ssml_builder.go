@@ -45,7 +45,7 @@ func NewAlexaBuilder() AlexaBuilder {
 func (alexaBuilder *alexaBuilder) Whisper(whisper string) AlexaBuilder {
 	var tpl bytes.Buffer
 	whisperTemplate.Execute(&tpl, whisper)
-	alexaBuilder.builder.addElement(tpl.String())
+	alexaBuilder.builder.addElement(tpl.String(), true)
 	return alexaBuilder
 }
 

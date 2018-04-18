@@ -2,7 +2,6 @@ package alexatools
 
 import (
 	"bytes"
-	"log"
 	"strings"
 	"text/template"
 )
@@ -47,6 +46,7 @@ type ssmlDate struct {
 }
 
 var replacer = strings.NewReplacer("&", " and ", "<", "", ">", "", "'", "", "\"", "")
+var backslashReplacer = strings.NewReplacer("\"", "")
 
 var breakStrengthTemplate *template.Template
 var breakTimeTemplate *template.Template
@@ -114,14 +114,14 @@ func (builder *ssmlBuilder) Phomeme(raw, phomeme string, cs CharacterSet) SsmlBu
 func (builder *ssmlBuilder) Sentence(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	sentenceTemplate.Execute(&tpl, val)
-	builder.addElement(tpl.String())
+	builder.addElement(tpl.String(), true)
 	return builder
 }
 
 func (builder *ssmlBuilder) Paragraph(val string) SsmlBuilder {
 	var tpl bytes.Buffer
 	paragraphTemplate.Execute(&tpl, val)
-	builder.addElement(tpl.String())
+	builder.addElement(tpl.String(), true)
 	return builder
 }
 
@@ -129,28 +129,33 @@ func (builder *ssmlBuilder) Emphasis(emphasis Emphasis, value string) SsmlBuilde
 	var tpl bytes.Buffer
 	el := emphasisLevel{Level: emphasis, Value: value}
 	emphasisTemplate.Execute(&tpl, el)
-	builder.addElement(tpl.String())
+	builder.addElement(tpl.String(), true)
+	//builder.addElement(backslashReplacer.Replace(tpl.String()))
 	return builder
 }
 
 func (builder *ssmlBuilder) Pause(bs BreakStrength) SsmlBuilder {
 	var tpl bytes.Buffer
 	breakStrengthTemplate.Execute(&tpl, string(bs))
-	builder.buffer.WriteString(tpl.String() + " ")
+	builder.buffer.WriteString(strings.TrimSpace(tpl.String()))
+	//builder.buffer.WriteString(backslashReplacer.Replace(tpl.String()) + " ")
 	return builder
 }
 
 func (builder *ssmlBuilder) DurationPause(millis int) SsmlBuilder {
 	var tpl bytes.Buffer
 	breakTimeTemplate.Execute(&tpl, millis)
-	builder.buffer.WriteString(tpl.String() + " ")
+	//builder.buffer.WriteString(backslashReplacer.Replace(tpl.String()) + " ")
+	//builder.buffer.WriteString(tpl.String() + " ")
+	builder.buffer.WriteString(strings.TrimSpace(tpl.String()))
 	return builder
 }
 
 func (builder *ssmlBuilder) Break(bt int) SsmlBuilder {
 	var tpl bytes.Buffer
 	breakTimeTemplate.Execute(&tpl, bt)
-	builder.buffer.WriteString(tpl.String() + " ")
+	//builder.buffer.WriteString(backslashReplacer.Replace(tpl.String()) + " ")
+	builder.buffer.WriteString(strings.TrimSpace(tpl.String()))
 	return builder
 }
 
@@ -158,7 +163,7 @@ func (builder *ssmlBuilder) Date(format SsmlClock, value string) SsmlBuilder {
 	var tpl bytes.Buffer
 	dv := ssmlDate{Format: format, Value: value}
 	dateTemplate.Execute(&tpl, dv)
-	builder.addElement(tpl.String())
+	builder.addElement(tpl.String(), false)
 	return builder
 }
 
@@ -179,14 +184,14 @@ func (builder *ssmlBuilder) Volume(v Volume) SsmlBuilder {
 
 func (builder *ssmlBuilder) SayAs(sa SayAs, value string) SsmlBuilder {
 	var tpl bytes.Buffer
-	sas := sayAs{SayAsType: sa, SayAsValue: value}
+	sas := sayAs{SayAsType: sa, SayAsValue: escape(value)}
 	sayAsTemplate.Execute(&tpl, sas)
-	builder.addElement(tpl.String())
+	builder.addElement(tpl.String(), false)
 	return builder
 }
 
 func (builder *ssmlBuilder) Say(s string) SsmlBuilder {
-	builder.addElement(s)
+	builder.addElement(s, true)
 	return builder
 }
 
@@ -203,7 +208,13 @@ func (builder *ssmlBuilder) BuildChunk() string {
 	tpl.WriteString(builder.buffer.String())
 	return tpl.String()
 }
-func (builder *ssmlBuilder) addElement(value string) {
+
+func (builder *ssmlBuilder) addElement(value string, escapeValue bool) {
+
+	if escapeValue {
+		value = escape(value)
+	}
+
 	if builder.VolumeVal == "" && builder.RateVal == "" && builder.PitchVal == "" {
 		builder.buffer.WriteString(value)
 		return
@@ -220,8 +231,6 @@ func (builder *ssmlBuilder) addElement(value string) {
 	if builder.RateVal != "" {
 		count++
 	}
-
-	log.Printf("Count = %d\n", count)
 
 	var tpl bytes.Buffer
 	tpl.WriteString("<prosody ")
@@ -266,6 +275,6 @@ func (builder *ssmlBuilder) addElement(value string) {
 }
 
 func escape(in string) (out string) {
-	out = replacer.Replace(in)
+	out = replacer.Replace(strings.TrimSpace(in))
 	return
 }
