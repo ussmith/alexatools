@@ -46,3 +46,17 @@ func TestEscape(t *testing.T) {
 	builder.Say("Yes & No")
 	fmt.Println(builder.Build())
 }
+
+func TestDate(t *testing.T) {
+	builder := New()
+
+	builder.Date(YearMonthDay, "2019-12-31")
+	t.Log(builder.Build())
+}
+
+func TestSsml(t *testing.T) {
+	builder := New()
+
+	ssml := builder.Say(" is happening on ").Date(YearMonthDay, "2019-12-31").Build()
+	t.Log(ssml)
+}
