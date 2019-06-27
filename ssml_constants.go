@@ -125,6 +125,27 @@ const (
 	TwelveHourClock SsmlClock = "hms12"
 	//SSML 24 Hour clock format
 	TwentyFourHourClock SsmlClock = "hms24"
+
+	//MonthDayYear ..
+	MonthDayYear SsmlClock = "mdy"
+	//DayMonthYear ..
+	DayMonthYear SsmlClock = "dmy"
+	//YearMonthDay ..
+	YearMonthDay SsmlClock = "ymd"
+	//MonthDay ..
+	MonthDay SsmlClock = "md"
+	//DayMonth ..
+	DayMonth SsmlClock = "dm"
+	//YearMonth ..
+	YearMonth SsmlClock = "ym"
+	//MonthYear ..
+	MonthYear SsmlClock = "my"
+	//Day ..
+	Day SsmlClock = "d"
+	//Month ..
+	Month SsmlClock = "m"
+	//Year ..
+	Year SsmlClock = "y"
 )
 
 const (
